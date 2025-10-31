@@ -6,6 +6,7 @@ from schedTest.tgPath import taskGeneration_p
 from schedTest.FixedPriority import SuspObl, SuspObl_WCRT
 from careTaking.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
 from careTaking.plots.plotting import plot_tasksets
+from careTaking.care_taking_task import generate_care_taking_tasks, merge_tasks_simple, merge_tasks_sparse
 
 def main():
     """

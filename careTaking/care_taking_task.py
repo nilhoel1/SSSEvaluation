@@ -27,7 +27,7 @@ def generate_care_taking_tasks(tasks, wcet_bound_ratio, delta_down_multiplier, d
         care_taking_tasks.append(care_taking_task)
     return care_taking_tasks
 
-def merge_tasks_lemma6(real_time_tasks, care_taking_tasks):
+def merge_tasks_simple(real_time_tasks, care_taking_tasks):
     """
     Merges real-time and care-taking tasks based on Lemma 6 from main.pdf.
     Each care-taking task is replaced by a sporadic real-time task with period Delta_down.
@@ -47,7 +47,7 @@ def merge_tasks_lemma6(real_time_tasks, care_taking_tasks):
         merged_tasks.append(new_task)
     return merged_tasks
 
-def merge_tasks_lemma15(real_time_tasks, care_taking_tasks, T):
+def merge_tasks_sparse(real_time_tasks, care_taking_tasks, T):
     """
     Merges real-time and care-taking tasks based on Lemma 15 from main.pdf.
     This is a simplified interpretation for a whole system analysis.
