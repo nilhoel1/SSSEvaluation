@@ -1,13 +1,16 @@
 import random
 import argparse
+import numpy as np
+import copy
 from schedTest.tgPath import taskGeneration_p
 from schedTest.FixedPriority import SuspObl, SuspObl_WCRT
 from schedTest.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
+from CareTakingPlots.plotting import plot_tasksets
 
 def main():
     """
     This script generates a task set using tgPath.py and checks its
-    schedulability using the Suspension Oblivious test from FixedPriority.py.
+    schedulability using various tests.
     """
     parser = argparse.ArgumentParser(description="Generate and test a task set.")
     parser.add_argument('--NumberOfTasksPerSet', type=int, default=5, help='The number of tasks in the set.')
@@ -22,10 +25,18 @@ def main():
     parser.add_argument('--minSratio', type=int, default=1, help='Minimum ratio of suspension length to execution time.')
     parser.add_argument('--numpaths', type=int, default=2, help='The number of execution paths for each task.')
     parser.add_argument('--scalef', type=float, default=0.8, help="A scaling factor for sub-paths' execution and suspension times.")
+    parser.add_argument('--plot_sets', action='store_true', help='Generate 100 tasksets and plot the results.')
     args = parser.parse_args()
 
+    if args.plot_sets:
+        run_and_plot_tasksets(args)
+    else:
+        run_single_taskset(args)
+
+def run_single_taskset(args):
     # Convert args to a dictionary to pass to taskGeneration_p
     params = vars(args)
+    params.pop('plot_sets', None)
 
     print("Generating task set with the following parameters:")
     # Using a formatted string for better alignment
@@ -86,9 +97,46 @@ def main():
         print("Time Demand Analysis: SCHEDULABLE")
         print("\nWorst-Case Response Times (TDA):")
         for i, task in enumerate(tasks):
-            print(f"Task {i}: {task['wcrt']:.2f} (Deadline: {task['deadline']:.2f})")
+            if 'wcrt' in task:
+                print(f"Task {i}: {task['wcrt']:.2f} (Deadline: {task['deadline']:.2f})")
     else:
         print("Time Demand Analysis: NOT SCHEDULABLE")
+
+def run_and_plot_tasksets(args):
+    results = {
+        "Suspension Oblivious": [],
+        "Liu and Layland Bound": [],
+        "Hyperbolic Bound": [],
+        "Time Demand Analysis": [],
+    }
+    
+    utilization_step = 0.01
+    utilizations = np.arange(utilization_step, 1.0 + utilization_step, utilization_step)
+
+    params = vars(args)
+    params.pop('plot_sets', None)
+
+    for u in utilizations:
+        print(f"Generating 100 task sets for utilization {u:.2f}")
+        for i in range(100):
+            params['uTotal'] = u
+            params['seed'] = random.randint(1, 10000)
+            
+            tasks = taskGeneration_p(**params)
+            
+            # Run tests
+            susp_obl_res = SuspObl(copy.deepcopy(tasks))
+            ll_res = LiuAndLaylandBound(copy.deepcopy(tasks))
+            hb_res = HyperbolicBound(copy.deepcopy(tasks))
+            tda_res = TimeDemandAnalysis(copy.deepcopy(tasks))
+            
+            # Store results
+            results["Suspension Oblivious"].append((u, susp_obl_res))
+            results["Liu and Layland Bound"].append((u, ll_res))
+            results["Hyperbolic Bound"].append((u, hb_res))
+            results["Time Demand Analysis"].append((u, tda_res))
+
+    plot_tasksets(results, "CareTakingPlots/taskset_plot.pdf")
 
 
 if __name__ == "__main__":

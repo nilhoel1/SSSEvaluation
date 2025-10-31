@@ -7,9 +7,9 @@ def LiuAndLaylandBound(tasks):
     utilization = 0
     for task in tasks:
         utilization += task['execution'] / task['period']
-    
+
     bound = len(tasks) * (2**(1/len(tasks)) - 1)
-    
+
     return utilization <= bound
 
 # Hyperbolic bound
@@ -19,15 +19,17 @@ def HyperbolicBound(tasks):
     product = 1
     for task in tasks:
         product *= (task['execution'] / task['period']) + 1
-    
+
     return product <= 2
 
 # Time Demand Analysis
 # Input: Task set
 # Output: Schedulability of task set
 def TimeDemandAnalysis(tasks):
-    for idx in range(len(tasks)):
-        wcrt = TimeDemandAnalysis_WCRT(tasks[idx], tasks[:idx])
+# Sort tasks by their period and save in HPTasks
+    SortedTasks = sorted(tasks, key=lambda x: x['period'])
+    for idx in range(len(SortedTasks)):
+        wcrt = TimeDemandAnalysis_WCRT(tasks[idx], SortedTasks[:idx])
         if wcrt > tasks[idx]['deadline']:  # deadline miss
             return False
         else:
@@ -44,7 +46,7 @@ def TimeDemandAnalysis_WCRT(task, HPTasks):
         wcrt = task['execution']
         for itask in HPTasks:
             wcrt += math.ceil(t / itask['period']) * itask['execution']
-        
+
         if (wcrt > task['deadline'] or wcrt <= t):
             break
         t = wcrt
