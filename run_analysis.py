@@ -4,8 +4,8 @@ import numpy as np
 import copy
 from schedTest.tgPath import taskGeneration_p
 from schedTest.FixedPriority import SuspObl, SuspObl_WCRT
-from schedTest.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
-from CareTakingPlots.plotting import plot_tasksets
+from careTaking.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
+from careTaking.plots.plotting import plot_tasksets
 
 def main():
     """
@@ -15,11 +15,11 @@ def main():
     parser = argparse.ArgumentParser(description="Generate and test a task set.")
     parser.add_argument('--NumberOfTasksPerSet', type=int, default=5, help='The number of tasks in the set.')
     parser.add_argument('--uTotal', type=float, default=0.75, help='The total utilization of the task set.')
-    parser.add_argument('--minsslength', type=float, default=0.1, help='Minimum suspension length as a ratio of (period - execution).')
-    parser.add_argument('--maxsslength', type=float, default=0.3, help='Maximum suspension length as a ratio of (period - execution).')
+    parser.add_argument('--minsslength', type=float, default=0, help='Minimum suspension length as a ratio of (period - execution).')
+    parser.add_argument('--maxsslength', type=float, default=0, help='Maximum suspension length as a ratio of (period - execution).')
     parser.add_argument('--Pmin', type=int, default=100, help='Minimum task period.')
     parser.add_argument('--numLog', type=int, default=1, help='The number of logarithmic decades for period distribution.')
-    parser.add_argument('--vRatio', type=float, default=1, help='The ratio of tasks that have suspensions.')
+    parser.add_argument('--vRatio', type=float, default=0, help='The ratio of tasks that have suspensions.')
     parser.add_argument('--seed', type=int, default=random.randint(1, 1000), help='The random seed for generation.')
     parser.add_argument('--numsegs', type=int, default=2, help='The number of execution segments.')
     parser.add_argument('--minSratio', type=int, default=1, help='Minimum ratio of suspension length to execution time.')
@@ -49,6 +49,7 @@ def run_single_taskset(args):
 
     # Generate the task set
     tasks = taskGeneration_p(**params)
+    tasks.sort(key=lambda x: x['period'])
 
     print("\nGenerated Task Set:")
     for i, task in enumerate(tasks):
@@ -91,8 +92,8 @@ def run_single_taskset(args):
     tda_schedulable = TimeDemandAnalysis(tasks)
 
     print("\n--- Simple Schedulability Tests ---")
-    print(f"Liu and Layland Bound: {'SCHEDULABLE' if ll_schedulable else 'NOT SCHEDULABLE'}")
-    print(f"Hyperbolic Bound: {'SCHEDULABLE' if hb_schedulable else 'NOT SCHEDULABLE'}")
+    print(f"Liu and Layland Bound: {'SCHEDULABLE' if ll_schedulable else 'TEST FAILED'}")
+    print(f"Hyperbolic Bound: {'SCHEDULABLE' if hb_schedulable else 'TEST FAILED'}")
     if tda_schedulable:
         print("Time Demand Analysis: SCHEDULABLE")
         print("\nWorst-Case Response Times (TDA):")
@@ -109,7 +110,7 @@ def run_and_plot_tasksets(args):
         "Hyperbolic Bound": [],
         "Time Demand Analysis": [],
     }
-    
+
     utilization_step = 0.01
     utilizations = np.arange(utilization_step, 1.0 + utilization_step, utilization_step)
 
@@ -121,22 +122,23 @@ def run_and_plot_tasksets(args):
         for i in range(100):
             params['uTotal'] = u
             params['seed'] = random.randint(1, 10000)
-            
+
             tasks = taskGeneration_p(**params)
-            
+            tasks.sort(key=lambda x: x['period'])
+
             # Run tests
             susp_obl_res = SuspObl(copy.deepcopy(tasks))
             ll_res = LiuAndLaylandBound(copy.deepcopy(tasks))
             hb_res = HyperbolicBound(copy.deepcopy(tasks))
             tda_res = TimeDemandAnalysis(copy.deepcopy(tasks))
-            
+
             # Store results
             results["Suspension Oblivious"].append((u, susp_obl_res))
             results["Liu and Layland Bound"].append((u, ll_res))
             results["Hyperbolic Bound"].append((u, hb_res))
             results["Time Demand Analysis"].append((u, tda_res))
 
-    plot_tasksets(results, "CareTakingPlots/taskset_plot.pdf")
+    plot_tasksets(results, "careTaking/plots/taskset_plot.pdf")
 
 
 if __name__ == "__main__":
