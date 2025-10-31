@@ -5,8 +5,9 @@ import copy
 from schedTest.tgPath import taskGeneration_p
 from schedTest.FixedPriority import SuspObl, SuspObl_WCRT
 from careTaking.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
+from careTaking.SimpleTests_ct import LiuAndLaylandBound_CT, HyperbolicBound_CT, TimeDemandAnalysis_CT
 from careTaking.plots.plotting import plot_tasksets
-from careTaking.care_taking_task import generate_care_taking_tasks, merge_tasks_simple, merge_tasks_sparse
+from careTaking.care_taking_task import generate_care_taking_tasks, ct_to_rt_simple, ct_to_rt_sparse
 
 def main():
     """
@@ -106,10 +107,12 @@ def run_single_taskset(args):
 
 def run_and_plot_tasksets(args):
     results = {
-        "Suspension Oblivious": [],
         "Liu and Layland Bound": [],
         "Hyperbolic Bound": [],
         "Time Demand Analysis": [],
+        "Liu and Layland Bound + CT(1,100,200)": [],
+        "Hyperbolic Bound + CT(1,100,200)": [],
+        "Time Demand Analysis + CT(1,100,200)": [],
     }
 
     utilization_step = 0.01
@@ -127,17 +130,32 @@ def run_and_plot_tasksets(args):
             tasks = taskGeneration_p(**params)
             tasks.sort(key=lambda x: x['period'])
 
+            ct_tasks = generate_care_taking_tasks(tasks, 1, 100, 200)
+            ct_rt_tasks = ct_to_rt_simple(tasks, ct_tasks)
+
+
             # Run tests
-            susp_obl_res = SuspObl(copy.deepcopy(tasks))
             ll_res = LiuAndLaylandBound(copy.deepcopy(tasks))
             hb_res = HyperbolicBound(copy.deepcopy(tasks))
             tda_res = TimeDemandAnalysis(copy.deepcopy(tasks))
+            # Run test with ct tasks
+            ll_res_ct = LiuAndLaylandBound_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
+            hb_res_ct = HyperbolicBound_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
+            tda_res_ct = TimeDemandAnalysis_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
+
 
             # Store results
-            results["Suspension Oblivious"].append((u, susp_obl_res))
+            #results["Suspension Oblivious"].append((u, susp_obl_res))
             results["Liu and Layland Bound"].append((u, ll_res))
             results["Hyperbolic Bound"].append((u, hb_res))
             results["Time Demand Analysis"].append((u, tda_res))
+            # Store results with ct
+            #results["Suspension Oblivious + CT(1,100,200)"
+            results["Liu and Layland Bound + CT(1,100,200)"].append((u, ll_res_ct))
+            results["Hyperbolic Bound + CT(1,100,200)"].append((u, hb_res_ct))
+            results["Time Demand Analysis + CT(1,100,200)"].append((u, tda_res_ct))
+
+    # Plot results
 
     plot_tasksets(results, "careTaking/plots/taskset_plot.pdf")
 

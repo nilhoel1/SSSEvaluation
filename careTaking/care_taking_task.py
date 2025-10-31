@@ -18,36 +18,35 @@ def generate_care_taking_tasks(tasks, wcet_bound_ratio, delta_down_multiplier, d
     care_taking_tasks = []
     for task in tasks:
         care_taking_task = {
-            'C^c': int(task['execution'] * wcet_bound_ratio),
-            'Delta_down': int(task['period'] * delta_down_multiplier),
-            'Delta_up': int(task['period'] * delta_up_multiplier),
-            # Assuming priority is based on period if not present
-            'priority': task.get('priority', task.get('period'))
+            'execution': task['execution'] * wcet_bound_ratio,
+            'Delta_down': task['period'] * delta_down_multiplier,
+            'Delta_up': task['period'] * delta_up_multiplier,
         }
         care_taking_tasks.append(care_taking_task)
     return care_taking_tasks
 
-def merge_tasks_simple(real_time_tasks, care_taking_tasks):
+def ct_to_rt_simple(real_time_tasks, care_taking_tasks):
     """
     Merges real-time and care-taking tasks based on Lemma 6 from main.pdf.
     Each care-taking task is replaced by a sporadic real-time task with period Delta_down.
     """
-    merged_tasks = list(real_time_tasks)
-    for ct_task in care_taking_tasks:
+    tasks = list()
+    for ct_task, rt_task in zip(care_taking_tasks, real_time_tasks):
         new_task = {
-            'execution': ct_task['C^c'],
             'period': ct_task['Delta_down'],
-            'deadline': ct_task['Delta_down'],  # Assuming implicit deadline
-            'utilization': ct_task['C^c'] / ct_task['Delta_down'],
+            'execution': ct_task['execution'],
+            # No deadline for cat_tasks, so making it infinity
+            'deadline': float('inf'),
+            'utilization': ct_task['execution'] / ct_task['Delta_down'],
             'sslength': 0,
-            'paths': [],
-            'Cseg': [],
-            'Sseg': []
+            # 'paths': [],
+            # 'Cseg': [],
+            # 'Sseg': []
         }
-        merged_tasks.append(new_task)
-    return merged_tasks
+        tasks.append(new_task)
+    return tasks
 
-def merge_tasks_sparse(real_time_tasks, care_taking_tasks, T):
+def ct_to_rt_sparse(real_time_tasks, care_taking_tasks, T):
     """
     Merges real-time and care-taking tasks based on Lemma 15 from main.pdf.
     This is a simplified interpretation for a whole system analysis.
@@ -56,16 +55,16 @@ def merge_tasks_sparse(real_time_tasks, care_taking_tasks, T):
     merged_tasks = list(real_time_tasks)
 
     if care_taking_tasks:
-        c_max = max(ct['C^c'] for ct in care_taking_tasks)
+        execution_max = max(ct['execution'] for ct in care_taking_tasks)
         blocking_task = {
-            'execution': c_max,
             'period': T,
+            'execution': execution_max,
             'deadline': T,  # Assuming implicit deadline
-            'utilization': c_max / T,
+            'utilization': execution_max / T,
             'sslength': 0,
-            'paths': [],
-            'Cseg': [],
-            'Sseg': []
+            # 'paths': [],
+            # 'Cseg': [],
+            # 'Sseg': []
         }
         merged_tasks.append(blocking_task)
 
