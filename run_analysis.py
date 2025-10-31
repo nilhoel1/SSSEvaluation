@@ -2,6 +2,7 @@ import random
 import argparse
 from schedTest.tgPath import taskGeneration_p
 from schedTest.FixedPriority import SuspObl, SuspObl_WCRT
+from schedTest.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
 
 def main():
     """
@@ -72,6 +73,23 @@ def main():
                 wcrt = SuspObl_WCRT(task, tasks[:i])
                 print(f"Task {i}: FAILED (WCRT: {wcrt:.2f} > Deadline: {task['deadline']:.2f})")
                 break # No need to check lower priority tasks
+
+    # Run the simple tests
+    ll_schedulable = LiuAndLaylandBound(tasks)
+    hb_schedulable = HyperbolicBound(tasks)
+    tda_schedulable = TimeDemandAnalysis(tasks)
+
+    print("\n--- Simple Schedulability Tests ---")
+    print(f"Liu and Layland Bound: {'SCHEDULABLE' if ll_schedulable else 'NOT SCHEDULABLE'}")
+    print(f"Hyperbolic Bound: {'SCHEDULABLE' if hb_schedulable else 'NOT SCHEDULABLE'}")
+    if tda_schedulable:
+        print("Time Demand Analysis: SCHEDULABLE")
+        print("\nWorst-Case Response Times (TDA):")
+        for i, task in enumerate(tasks):
+            print(f"Task {i}: {task['wcrt']:.2f} (Deadline: {task['deadline']:.2f})")
+    else:
+        print("Time Demand Analysis: NOT SCHEDULABLE")
+
 
 if __name__ == "__main__":
     main()
