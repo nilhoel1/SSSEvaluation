@@ -7,7 +7,7 @@ from schedTest.FixedPriority import SuspObl, SuspObl_WCRT
 from careTaking.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
 from careTaking.SimpleTests_ct import LiuAndLaylandBound_CT, HyperbolicBound_CT, TimeDemandAnalysis_CT
 from careTaking.plots.plotting import plot_tasksets
-from careTaking.care_taking_task import generate_care_taking_tasks, ct_to_rt_simple, ct_to_rt_sparse
+from careTaking.care_taking_task import generate_care_taking_tasks, ct_to_rt_simple, ct_to_rt_sparse, find_smallest_sparse_T
 
 def main():
     """
@@ -122,15 +122,15 @@ def run_and_plot_tasksets(args):
     params.pop('plot_sets', None)
 
     for u in utilizations:
-        print(f"Generating 100 task sets for utilization {u:.2f}")
-        for i in range(100):
+        print(f"Generating 10 task sets for utilization {u:.2f}")
+        for i in range(10):
             params['uTotal'] = u
             params['seed'] = random.randint(1, 10000)
 
             tasks = taskGeneration_p(**params)
             tasks.sort(key=lambda x: x['period'])
 
-            ct_tasks = generate_care_taking_tasks(tasks, 1, 100, 200)
+            ct_tasks = generate_care_taking_tasks(tasks, 1, 100, 1000)
             ct_rt_tasks = ct_to_rt_simple(tasks, ct_tasks)
 
 
@@ -142,6 +142,13 @@ def run_and_plot_tasksets(args):
             ll_res_ct = LiuAndLaylandBound_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
             hb_res_ct = HyperbolicBound_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
             tda_res_ct = TimeDemandAnalysis_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
+
+            T = find_smallest_sparse_T(ct_tasks)
+            # Print hat{T}
+            if (T is not None):
+                print(f"T: {T}")
+            #if T:
+            #    ct_rt_tasks_sparse = ct_to_rt_sparse(tasks, ct_tasks, T)
 
 
             # Store results
