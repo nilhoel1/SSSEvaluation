@@ -116,7 +116,7 @@ def run_and_plot_tasksets(args):
         "Time Demand Analysis + SparseCT": [],
     }
 
-    utilization_step = 0.05
+    utilization_step = 0.01
     utilizations = np.arange(utilization_step, 1.0 + utilization_step, utilization_step)
 
     params = vars(args)

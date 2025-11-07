@@ -1,6 +1,8 @@
 
 import random
 import math
+from numba import njit
+import numpy as np
 
 def generate_care_taking_tasks(tasks, wcet_bound_ratio, delta_down_multiplier, delta_up_multiplier):
     """
@@ -76,30 +78,24 @@ def ct_to_rt_sparse(care_taking_tasks, T):
 
     return tasks
 
-def theorem_13_test(ct_tasks, hat_T):
-    """
-    Checks the condition from Theorem 13 in main.pdf for a set of care-taking tasks.
+@njit
+def theorem_13_test_njit(ct_tasks_arr, hat_T):
+    n_tasks = ct_tasks_arr.shape[0]
+    omega_sizes = np.zeros(n_tasks)
+    for i in range(n_tasks):
+        omega_sizes[i] = math.floor(ct_tasks_arr[i, 2] / hat_T) - math.ceil(ct_tasks_arr[i, 1] / hat_T) + 1
 
-    Args:
-        ct_tasks: A list of care-taking task dictionaries.
-        hat_T: The given hat_T parameter.
-
-    Returns:
-        True if the condition holds for all tasks, False otherwise.
-    """
-    omega_sizes = [math.floor(task['Delta_up'] / hat_T) - math.ceil(task['Delta_down'] / hat_T) + 1 for task in ct_tasks]
-
-    for i, task_i in enumerate(ct_tasks):
+    for i in range(n_tasks):
         omega_i_size = omega_sizes[i]
 
         # Determine L_i
-        L_i = []
-        for l, ct_task_l in enumerate(ct_tasks):
+        L_i_indices = []
+        for l in range(n_tasks):
             omega_l_size = omega_sizes[l]
             if omega_l_size < omega_i_size:
-                L_i.append(ct_task_l)
+                L_i_indices.append(l)
             elif omega_l_size == omega_i_size and l < i:
-                L_i.append(ct_task_l)
+                L_i_indices.append(l)
 
         # Check the condition for at least one t in {1, ..., |Omega_i|}
         condition_holds_for_i = False
@@ -108,8 +104,8 @@ def theorem_13_test(ct_tasks, hat_T):
 
         for t in range(1, int(omega_i_size) + 1):
             sum_val = 0
-            for ct_task_l in L_i:
-                denominator = max(math.ceil(ct_task_l['Delta_down'] / hat_T), 1)
+            for l_idx in L_i_indices:
+                denominator = max(math.ceil(ct_tasks_arr[l_idx, 1] / hat_T), 1)
                 if denominator > 0:
                     sum_val += math.floor(t / denominator)
 
@@ -121,6 +117,36 @@ def theorem_13_test(ct_tasks, hat_T):
             return False
 
     return True
+
+def theorem_13_test(ct_tasks, hat_T):
+    """
+    Checks the condition from Theorem 13 in main.pdf for a set of care-taking tasks.
+
+    Args:
+        ct_tasks: A list of care-taking task dictionaries.
+        hat_T: The given hat_T parameter.
+
+    Returns:
+        True if the condition holds for all tasks, False otherwise.
+    """
+    if not ct_tasks:
+        return True
+    ct_tasks_arr = np.array([[task['execution'], task['Delta_down'], task['Delta_up']] for task in ct_tasks])
+    return theorem_13_test_njit(ct_tasks_arr, hat_T)
+
+
+@njit
+def find_smallest_sparse_T_njit(ct_tasks_arr):
+    if ct_tasks_arr.shape[0] == 0:
+        return -1
+
+    start_T = 1
+    max_T = np.min(ct_tasks_arr[:, 2])
+    for hat_T in range(int(max_T), int(start_T) - 1, -1):
+        if theorem_13_test_njit(ct_tasks_arr, hat_T):
+            return hat_T
+
+    return -1
 
 def find_smallest_sparse_T(ct_tasks):
     """
@@ -134,11 +160,6 @@ def find_smallest_sparse_T(ct_tasks):
     """
     if not ct_tasks:
         return None
-
-    start_T = 1 # = max(task['Delta_down'] for task in ct_tasks)
-    max_T = min(task['Delta_up'] for task in ct_tasks)
-    for hat_T in range(int(max_T), int(start_T) - 1, -1):
-        if theorem_13_test(ct_tasks, hat_T):
-            return hat_T
-
-    return None
+    ct_tasks_arr = np.array([[task['execution'], task['Delta_down'], task['Delta_up']] for task in ct_tasks])
+    result = find_smallest_sparse_T_njit(ct_tasks_arr)
+    return result if result != -1 else None
