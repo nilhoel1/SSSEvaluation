@@ -47,13 +47,13 @@ def ct_to_rt_simple(real_time_tasks, care_taking_tasks):
         tasks.append(new_task)
     return tasks
 
-def ct_to_rt_sparse(real_time_tasks, care_taking_tasks, T):
+def ct_to_rt_sparse(care_taking_tasks, T):
     """
     Merges real-time and care-taking tasks based on Lemma 15 from main.pdf.
     This is a simplified interpretation for a whole system analysis.
     All care-taking tasks are replaced by a single sporadic task with WCET equal to the max WCET of all care-taking tasks.
     """
-    merged_tasks = list(real_time_tasks)
+    tasks = list()
 
     if care_taking_tasks:
         execution_max = max(ct['execution'] for ct in care_taking_tasks)
@@ -67,9 +67,14 @@ def ct_to_rt_sparse(real_time_tasks, care_taking_tasks, T):
             # 'Cseg': [],
             # 'Sseg': []
         }
-        merged_tasks.append(blocking_task)
+        tasks.append(blocking_task)
 
-    return merged_tasks
+        # Assert that only one RT task has been created
+        if len(tasks) != 1:
+            print("Error")
+            quit(1)
+
+    return tasks
 
 def theorem_13_test(ct_tasks, hat_T):
     """

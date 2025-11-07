@@ -5,7 +5,7 @@ import copy
 from schedTest.tgPath import taskGeneration_p
 from schedTest.FixedPriority import SuspObl, SuspObl_WCRT
 from careTaking.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
-from careTaking.SimpleTests_ct import LiuAndLaylandBound_CT, HyperbolicBound_CT, TimeDemandAnalysis_CT
+from careTaking.SimpleTests_ct import LiuAndLaylandBound_CT, HyperbolicBound_CT, TimeDemandAnalysis_CT, SparseWorkloadFunction_CT
 from careTaking.plots.plotting import plot_tasksets
 from careTaking.care_taking_task import generate_care_taking_tasks, ct_to_rt_simple, ct_to_rt_sparse, find_smallest_sparse_T
 
@@ -107,15 +107,16 @@ def run_single_taskset(args):
 
 def run_and_plot_tasksets(args):
     results = {
-        "Liu and Layland Bound": [],
-        "Hyperbolic Bound": [],
+        #"Liu and Layland Bound": [],
+        #"Hyperbolic Bound": [],
         "Time Demand Analysis": [],
-        "Liu and Layland Bound + CT(1,100,200)": [],
-        "Hyperbolic Bound + CT(1,100,200)": [],
+        #"Liu and Layland Bound + CT(1,100,200)": [],
+        #"Hyperbolic Bound + CT(1,100,200)": [],
         "Time Demand Analysis + CT(1,100,200)": [],
+        "Time Demand Analysis + SparseCT": [],
     }
 
-    utilization_step = 0.01
+    utilization_step = 0.05
     utilizations = np.arange(utilization_step, 1.0 + utilization_step, utilization_step)
 
     params = vars(args)
@@ -147,20 +148,26 @@ def run_and_plot_tasksets(args):
             # Print hat{T}
             if (T is not None):
                 print(f"T: {T}")
-            #if T:
-            #    ct_rt_tasks_sparse = ct_to_rt_sparse(tasks, ct_tasks, T)
+            if T:
+                ct_rt_tasks_sparse = ct_to_rt_sparse(ct_tasks, T)
+                tda_res_sparese_ct = SparseWorkloadFunction_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks_sparse), copy.deepcopy(ct_tasks))
+            else :
+                tda_res_sparese_ct = False
+
 
 
             # Store results
             #results["Suspension Oblivious"].append((u, susp_obl_res))
-            results["Liu and Layland Bound"].append((u, ll_res))
-            results["Hyperbolic Bound"].append((u, hb_res))
+            #results["Liu and Layland Bound"].append((u, ll_res))
+            #results["Hyperbolic Bound"].append((u, hb_res))
             results["Time Demand Analysis"].append((u, tda_res))
             # Store results with ct
             #results["Suspension Oblivious + CT(1,100,200)"
-            results["Liu and Layland Bound + CT(1,100,200)"].append((u, ll_res_ct))
-            results["Hyperbolic Bound + CT(1,100,200)"].append((u, hb_res_ct))
+            #results["Liu and Layland Bound + CT(1,100,200)"].append((u, ll_res_ct))
+            #results["Hyperbolic Bound + CT(1,100,200)"].append((u, hb_res_ct))
             results["Time Demand Analysis + CT(1,100,200)"].append((u, tda_res_ct))
+            results["Time Demand Analysis + SparseCT"].append((u, tda_res_sparese_ct))
+
 
     # Plot results
 

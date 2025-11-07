@@ -26,7 +26,7 @@ def HyperbolicBound(tasks):
 # Input: Task set
 # Output: Schedulability of task set
 def TimeDemandAnalysis(tasks):
-    tasks.sort(key=lambda x: x['period'])
+    #tasks.sort(key=lambda x: x['period'])
     for idx in range(len(tasks)):
         wcrt = TimeDemandAnalysis_WCRT(tasks[idx], tasks[:idx])
         if wcrt > tasks[idx]['deadline']:  # deadline miss
