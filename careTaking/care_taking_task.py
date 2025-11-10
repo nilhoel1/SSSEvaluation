@@ -78,7 +78,7 @@ def ct_to_rt_sparse(care_taking_tasks, T):
 
     return tasks
 
-#@njit
+@njit
 def theorem_13_test_njit(ct_tasks_arr, hat_T):
     n_tasks = ct_tasks_arr.shape[0]
     omega_sizes = np.zeros(n_tasks)
@@ -137,7 +137,7 @@ def theorem_13_test(ct_tasks, hat_T):
     return theorem_13_test_njit(ct_tasks_arr, hat_T)
 
 
-#@njit
+@njit
 def find_largest_sparse_T_njit(ct_tasks_arr):
     if ct_tasks_arr.shape[0] == 0:
         return -1
