@@ -55,9 +55,7 @@ def TimeDemandAnalysis_WCRT(task, ct_task, HPTasks, ct_HPTasks):
 # Sparse Workload Function
 # Input: Task set, care-taking task set, sparse interval T
 # Output: Schedulability of task set
-def SparseWorkloadFunction_CT(tasks, ct_tasks_sparse, ct_tasks):
-    T_sparse = ct_tasks_sparse[0]['period']
-
+def SparseWorkloadFunction_CT(tasks, ct_tasks, T_sparse):
     # Assume tasks are sorted by priority (Rate Monotonic)
     for i in range(len(tasks)):
         task_i = tasks[i]

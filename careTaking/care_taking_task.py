@@ -78,12 +78,14 @@ def ct_to_rt_sparse(care_taking_tasks, T):
 
     return tasks
 
-@njit
+#@njit
 def theorem_13_test_njit(ct_tasks_arr, hat_T):
     n_tasks = ct_tasks_arr.shape[0]
     omega_sizes = np.zeros(n_tasks)
+
     for i in range(n_tasks):
-        omega_sizes[i] = math.floor(ct_tasks_arr[i, 2] / hat_T) - math.ceil(ct_tasks_arr[i, 1] / hat_T) + 1
+        # This is Gtinzl Approved
+        omega_sizes[i]  = math.floor(ct_tasks_arr[i, 2] / hat_T) - math.ceil(ct_tasks_arr[i, 1] / hat_T) + 1
 
     for i in range(n_tasks):
         omega_i_size = omega_sizes[i]
@@ -107,9 +109,9 @@ def theorem_13_test_njit(ct_tasks_arr, hat_T):
             for l_idx in L_i_indices:
                 denominator = max(math.ceil(ct_tasks_arr[l_idx, 1] / hat_T), 1)
                 if denominator > 0:
-                    sum_val += math.floor(t / denominator)
+                    sum_val += math.ceil(t / denominator)
 
-            if 1 + sum_val < t:
+            if 1 + sum_val <= t:
                 condition_holds_for_i = True
                 break
 
@@ -135,8 +137,8 @@ def theorem_13_test(ct_tasks, hat_T):
     return theorem_13_test_njit(ct_tasks_arr, hat_T)
 
 
-@njit
-def find_smallest_sparse_T_njit(ct_tasks_arr):
+#@njit
+def find_largest_sparse_T_njit(ct_tasks_arr):
     if ct_tasks_arr.shape[0] == 0:
         return -1
 
@@ -148,18 +150,18 @@ def find_smallest_sparse_T_njit(ct_tasks_arr):
 
     return -1
 
-def find_smallest_sparse_T(ct_tasks):
+def find_largest_sparse_T(ct_tasks):
     """
-    Finds the smallest hat_T for which the theorem_13_test passes.
+    Finds the largest hat_T for which the theorem_13_test passes.
 
     Args:
         ct_tasks: A list of care-taking task dictionaries.
 
     Returns:
-        The smallest hat_T found, or None if no such hat_T is found.
+        The largest hat_T found, or None if no such hat_T is found.
     """
     if not ct_tasks:
         return None
     ct_tasks_arr = np.array([[task['execution'], task['Delta_down'], task['Delta_up']] for task in ct_tasks])
-    result = find_smallest_sparse_T_njit(ct_tasks_arr)
+    result = find_largest_sparse_T_njit(ct_tasks_arr)
     return result if result != -1 else None

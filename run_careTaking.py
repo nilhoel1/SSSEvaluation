@@ -7,7 +7,7 @@ from schedTest.FixedPriority import SuspObl, SuspObl_WCRT
 from careTaking.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
 from careTaking.SimpleTests_ct import LiuAndLaylandBound_CT, HyperbolicBound_CT, TimeDemandAnalysis_CT, SparseWorkloadFunction_CT
 from careTaking.plots.plotting import plot_tasksets
-from careTaking.care_taking_task import generate_care_taking_tasks, ct_to_rt_simple, ct_to_rt_sparse, find_smallest_sparse_T
+from careTaking.care_taking_task import generate_care_taking_tasks, ct_to_rt_simple, ct_to_rt_sparse, find_largest_sparse_T
 
 def main():
     """
@@ -144,7 +144,7 @@ def run_and_plot_tasksets(args):
             hb_res_ct = HyperbolicBound_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
             tda_res_ct = TimeDemandAnalysis_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
 
-            T = find_smallest_sparse_T(ct_tasks)
+            T = find_largest_sparse_T(ct_tasks)
             # Print hat{T}
             if (T is not None):
                 print(f"T: {T}")
@@ -153,6 +153,7 @@ def run_and_plot_tasksets(args):
                 tda_res_sparese_ct = SparseWorkloadFunction_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks_sparse), copy.deepcopy(ct_tasks))
             else :
                 tda_res_sparese_ct = False
+                print(f"T: None")
 
 
 
