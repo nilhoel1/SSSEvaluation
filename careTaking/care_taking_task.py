@@ -49,6 +49,27 @@ def ct_to_rt_simple(real_time_tasks, care_taking_tasks):
         tasks.append(new_task)
     return tasks
 
+def ct_to_rt_simple_opt(real_time_tasks, care_taking_tasks):
+    """
+    Merges real-time and care-taking tasks based on Lemma 6 from main.pdf.
+    Each care-taking task is replaced by a sporadic real-time task with period Delta_down.
+    """
+    tasks = list()
+    for ct_task, rt_task in zip(care_taking_tasks, real_time_tasks):
+        new_task = {
+            'period': ct_task['Delta_up'],
+            'execution': ct_task['execution'],
+            # No deadline for cat_tasks, so making it infinity
+            'deadline': float('inf'),
+            'utilization': ct_task['execution'] / ct_task['Delta_up'],
+            'sslength': 0,
+            # 'paths': [],
+            # 'Cseg': [],
+            # 'Sseg': []
+        }
+        tasks.append(new_task)
+    return tasks
+
 def ct_to_rt_sparse(care_taking_tasks, T):
     """
     Merges real-time and care-taking tasks based on Lemma 15 from main.pdf.

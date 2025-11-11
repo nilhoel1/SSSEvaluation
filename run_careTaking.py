@@ -7,7 +7,10 @@ from schedTest.FixedPriority import SuspObl, SuspObl_WCRT
 from careTaking.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
 from careTaking.SimpleTests_ct import LiuAndLaylandBound_CT, HyperbolicBound_CT, TimeDemandAnalysis_CT, SparseWorkloadFunction_CT
 from careTaking.plots.plotting import plot_tasksets
-from careTaking.care_taking_task import generate_care_taking_tasks, ct_to_rt_simple, ct_to_rt_sparse, find_largest_sparse_T
+from careTaking.care_taking_task import generate_care_taking_tasks, ct_to_rt_simple, ct_to_rt_sparse, find_largest_sparse_T, ct_to_rt_simple_opt
+import time
+import os
+import shutil
 
 def main():
     """
@@ -110,11 +113,12 @@ def run_and_plot_tasksets(args):
     results = {
         #"Liu and Layland Bound": [],
         #"Hyperbolic Bound": [],
-        "Time Demand Analysis": [],
+        "TDA": [],
         #"Liu and Layland Bound + CT(1,100,200)": [],
         #"Hyperbolic Bound + CT(1,100,200)": [],
-        "Time Demand Analysis + CT(1,100,200)": [],
-        "Time Demand Analysis + SparseCT": [],
+        "TDA simple": [],
+        "TDA periodic": [],
+        "TDA sparse": [],
     }
 
     utilization_step = 0.01
@@ -126,9 +130,25 @@ def run_and_plot_tasksets(args):
     params.pop('plot_sets', None)
     params.pop('printTasks', None)
 
-    for u in utilizations_40:
+    time_to_find_T = {
+            "Nr Tasks": [],
+            "time": []
+        }
+    ignore_first_time_stamp = True
+
+    # Create a directory name based on the arguments
+    dir_name = f"N-{args.NumberOfTasksPerSet}_S-{args.minsslength}-{args.maxsslength}_Seg-{args.numsegs}"
+    plot_dir = os.path.join("careTaking", "plots", dir_name)
+
+    # Remove the directory if it exists, then create it
+    if os.path.exists(plot_dir):
+        shutil.rmtree(plot_dir)
+    os.makedirs(plot_dir)
+
+
+    for u in utilizations:
         print(f"Generating 10 task sets for utilization {u:.2f}")
-        for i in range(1):
+        for i in range(10):
             params['uTotal'] = u
             params['seed'] = random.randint(1, 10000)
 
@@ -137,6 +157,7 @@ def run_and_plot_tasksets(args):
 
             ct_tasks = generate_care_taking_tasks(tasks, 1, 10, 100)
             ct_rt_tasks = ct_to_rt_simple(tasks, ct_tasks)
+            ct_rt_tasks_opt = ct_to_rt_simple_opt(tasks, ct_tasks)
 
 
             # Run tests
@@ -147,10 +168,21 @@ def run_and_plot_tasksets(args):
             ll_res_ct = LiuAndLaylandBound_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
             hb_res_ct = HyperbolicBound_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
             tda_res_ct = TimeDemandAnalysis_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks))
+            tda_res_ct_opt = TimeDemandAnalysis_CT(copy.deepcopy(tasks), copy.deepcopy(ct_rt_tasks_opt))
 
+
+            # Measure time for subsequent executions
+            start_time = time.time()
             T = find_largest_sparse_T(ct_tasks)
+            elapsed_time = time.time() - start_time
+            if not ignore_first_time_stamp:
+                time_to_find_T["Nr Tasks"].append(len(ct_tasks))
+                time_to_find_T["time"].append(elapsed_time)
+            else:
+                ignore_first_time_stamp = False
+
             # Print hat{T}
-            if (T is not None):
+            if (T is not None) and args.printTasks:
                 print(f"T: {T}")
             if T:
                 ct_rt_tasks_sparse = ct_to_rt_sparse(ct_tasks, T)
@@ -174,18 +206,24 @@ def run_and_plot_tasksets(args):
             #results["Suspension Oblivious"].append((u, susp_obl_res))
             #results["Liu and Layland Bound"].append((u, ll_res))
             #results["Hyperbolic Bound"].append((u, hb_res))
-            results["Time Demand Analysis"].append((u, tda_res))
+            results["TDA"].append((u, tda_res))
             # Store results with ct
             #results["Suspension Oblivious + CT(1,100,200)"
             #results["Liu and Layland Bound + CT(1,100,200)"].append((u, ll_res_ct))
             #results["Hyperbolic Bound + CT(1,100,200)"].append((u, hb_res_ct))
-            results["Time Demand Analysis + CT(1,100,200)"].append((u, tda_res_ct))
-            results["Time Demand Analysis + SparseCT"].append((u, tda_res_sparese_ct))
+            results["TDA simple"].append((u, tda_res_ct))
+            results["TDA periodic"].append((u, tda_res_ct_opt))
+            results["TDA sparse"].append((u, tda_res_sparese_ct))
 
 
     # Plot results
+    plot_path = os.path.join(plot_dir, "taskset_plot.pdf")
+    plot_tasksets(results, plot_path)
 
-    plot_tasksets(results, "careTaking/plots/taskset_plot.pdf")
+    # save time to compute T in csv file
+    csv_path = os.path.join(plot_dir, "time_to_find_T.csv")
+    data = np.column_stack((time_to_find_T["Nr Tasks"], time_to_find_T["time"]))
+    np.savetxt(csv_path, data, delimiter=",", fmt="%s", header="Nr Tasks, time", comments='')
 
 
 if __name__ == "__main__":
