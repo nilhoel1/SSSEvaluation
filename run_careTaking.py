@@ -32,6 +32,9 @@ def main():
     parser.add_argument('--scalef', type=float, default=0.8, help="A scaling factor for sub-paths' execution and suspension times.")
     parser.add_argument('--plot_sets', action='store_true', help='Generate 100 tasksets and plot the results.')
     parser.add_argument('--printTasks', type=bool, default=False, help='Print the tasks sets')
+    parser.add_argument('--ct_wcet_mult', type=int, default=1, help='Multiplier for the care-taking task\'s WCET.')
+    parser.add_argument('--ct_d_down_mult', type=int, default=10, help='Multiplier for Delta_down.')
+    parser.add_argument('--ct_d_up_mult', type=int, default=100, help='Multiplier for Delta_up.')
     args = parser.parse_args()
 
     if args.plot_sets:
@@ -43,8 +46,10 @@ def run_single_taskset(args):
     # Convert args to a dictionary to pass to taskGeneration_p
     params = vars(args).copy()
     params.pop('plot_sets', None)
-
-    print("Generating task set with the following parameters:")
+    params.pop('printTasks', None)
+    params.pop('ct_wcet_mult', None)
+    params.pop('ct_d_down_mult', None)
+    params.pop('ct_d_up_mult', None)
     # Using a formatted string for better alignment
     for key, value in params.items():
         print(f"- {key:<20}: {value}")
@@ -129,6 +134,9 @@ def run_and_plot_tasksets(args):
     params = vars(args).copy()
     params.pop('plot_sets', None)
     params.pop('printTasks', None)
+    params.pop('ct_wcet_mult', None)
+    params.pop('ct_d_down_mult', None)
+    params.pop('ct_d_up_mult', None)
 
     time_to_find_T = {
             "Nr Tasks": [],
@@ -137,7 +145,7 @@ def run_and_plot_tasksets(args):
     ignore_first_time_stamp = True
 
     # Create a directory name based on the arguments
-    dir_name = f"N-{args.NumberOfTasksPerSet}_S-{args.minsslength}-{args.maxsslength}_Seg-{args.numsegs}"
+    dir_name = f"N-{args.NumberOfTasksPerSet}_S-{args.minsslength}-{args.maxsslength}_Seg-{args.numsegs}_CT-{args.ct_wcet_mult}-{args.ct_d_down_mult}-{args.ct_d_up_mult}"
     plot_dir = os.path.join("careTaking", "plots", dir_name)
 
     # Remove the directory if it exists, then create it
@@ -155,7 +163,7 @@ def run_and_plot_tasksets(args):
             tasks = taskGeneration_p(**params)
             tasks.sort(key=lambda x: x['period'])
 
-            ct_tasks = generate_care_taking_tasks(tasks, 1, 10, 100)
+            ct_tasks = generate_care_taking_tasks(tasks, args.ct_wcet_mult, args.ct_d_down_mult, args.ct_d_up_mult)
             ct_rt_tasks = ct_to_rt_simple(tasks, ct_tasks)
             ct_rt_tasks_opt = ct_to_rt_simple_opt(tasks, ct_tasks)
 
