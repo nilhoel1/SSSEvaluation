@@ -1,0 +1,45 @@
+Generating 10 task sets for utilization 0.40
+T: 210
+RT Taskset:
+{'execution': np.float64(2.68428295909586), 'period': 147.82288821306622}
+{'execution': np.float64(3.415592394285373), 'period': 193.67082744913895}
+{'execution': np.float64(0.6927994411212215), 'period': 196.71554254383108}
+{'execution': np.float64(11.904671394299575), 'period': 211.54714753604725}
+{'execution': np.float64(3.427841264204463), 'period': 220.62979693539927}
+{'execution': np.float64(0.8605401768652422), 'period': 281.35174991827876}
+{'execution': np.float64(2.642568807845966), 'period': 357.8137544737575}
+{'execution': np.float64(1.1436641778569407), 'period': 474.1483645533525}
+{'execution': np.float64(13.224244846949862), 'period': 611.0365471580583}
+{'execution': np.float64(1.3493082132994343), 'period': 646.2134274140953}
+{'execution': np.float64(23.56472728333302), 'period': 698.5665812249873}
+{'execution': np.float64(6.584662843544327), 'period': 708.2824207422805}
+{'execution': np.float64(1.4941431965596423), 'period': 721.2812350632917}
+{'execution': np.float64(5.601427132454445), 'period': 748.9222091975912}
+{'execution': np.float64(8.513683914699426), 'period': 792.4467154887252}
+{'execution': np.float64(7.095304679453876), 'period': 810.439335317021}
+{'execution': np.float64(52.34998153730486), 'period': 862.2963369490831}
+{'execution': np.float64(14.141443716388876), 'period': 876.1604576854107}
+{'execution': np.float64(14.545129402939153), 'period': 940.0247680700086}
+{'execution': np.float64(85.70972085604338), 'period': 975.2612712834859}
+CT Taskset:
+{'execution': np.float64(2.68428295909586), 'Delta_down': 1478.2288821306622, 'Delta_up': 14782.288821306622}
+{'execution': np.float64(3.415592394285373), 'Delta_down': 1936.7082744913896, 'Delta_up': 19367.082744913896}
+{'execution': np.float64(0.6927994411212215), 'Delta_down': 1967.1554254383109, 'Delta_up': 19671.554254383107}
+{'execution': np.float64(11.904671394299575), 'Delta_down': 2115.4714753604726, 'Delta_up': 21154.714753604723}
+{'execution': np.float64(3.427841264204463), 'Delta_down': 2206.297969353993, 'Delta_up': 22062.979693539928}
+{'execution': np.float64(0.8605401768652422), 'Delta_down': 2813.5174991827876, 'Delta_up': 28135.174991827877}
+{'execution': np.float64(2.642568807845966), 'Delta_down': 3578.137544737575, 'Delta_up': 35781.37544737575}
+{'execution': np.float64(1.1436641778569407), 'Delta_down': 4741.483645533525, 'Delta_up': 47414.83645533525}
+{'execution': np.float64(13.224244846949862), 'Delta_down': 6110.365471580582, 'Delta_up': 61103.65471580583}
+{'execution': np.float64(1.3493082132994343), 'Delta_down': 6462.1342741409535, 'Delta_up': 64621.342741409535}
+{'execution': np.float64(23.56472728333302), 'Delta_down': 6985.665812249873, 'Delta_up': 69856.65812249873}
+{'execution': np.float64(6.584662843544327), 'Delta_down': 7082.824207422805, 'Delta_up': 70828.24207422805}
+{'execution': np.float64(1.4941431965596423), 'Delta_down': 7212.812350632917, 'Delta_up': 72128.12350632917}
+{'execution': np.float64(5.601427132454445), 'Delta_down': 7489.222091975912, 'Delta_up': 74892.22091975911}
+{'execution': np.float64(8.513683914699426), 'Delta_down': 7924.467154887252, 'Delta_up': 79244.67154887252}
+{'execution': np.float64(7.095304679453876), 'Delta_down': 8104.39335317021, 'Delta_up': 81043.9335317021}
+{'execution': np.float64(52.34998153730486), 'Delta_down': 8622.96336949083, 'Delta_up': 86229.6336949083}
+{'execution': np.float64(14.141443716388876), 'Delta_down': 8761.604576854108, 'Delta_up': 87616.04576854108}
+{'execution': np.float64(14.545129402939153), 'Delta_down': 9400.247680700086, 'Delta_up': 94002.47680700086}
+{'execution': np.float64(85.70972085604338), 'Delta_down': 9752.61271283486, 'Delta_up': 97526.1271283486}
+[DONE] careTaking/plots/taskset_plot.pdf

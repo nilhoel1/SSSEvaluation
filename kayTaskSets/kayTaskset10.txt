@@ -1,0 +1,25 @@
+Generating 10 task sets for utilization 0.40
+T: 498
+RT Taskset:
+{'execution': np.float64(1.0050440318728966), 'period': 273.959174379317}
+{'execution': np.float64(13.442705509635214), 'period': 277.87380618448435}
+{'execution': np.float64(10.508748836598299), 'period': 393.99281454430394}
+{'execution': np.float64(15.054710202967419), 'period': 398.8919703451597}
+{'execution': np.float64(19.715110869649934), 'period': 415.3517359915389}
+{'execution': np.float64(23.408422620709207), 'period': 439.45477905992107}
+{'execution': np.float64(10.667225257041494), 'period': 677.7031907983059}
+{'execution': np.float64(6.558466400170043), 'period': 687.2971422471486}
+{'execution': np.float64(100.1910953086834), 'period': 915.5724243376192}
+{'execution': np.float64(47.8115887751007), 'period': 994.1085504472168}
+CT Taskset:
+{'execution': np.float64(1.0050440318728966), 'Delta_down': 2739.5917437931703, 'Delta_up': 27395.9174379317}
+{'execution': np.float64(13.442705509635214), 'Delta_down': 2778.7380618448433, 'Delta_up': 27787.380618448435}
+{'execution': np.float64(10.508748836598299), 'Delta_down': 3939.9281454430393, 'Delta_up': 39399.28145443039}
+{'execution': np.float64(15.054710202967419), 'Delta_down': 3988.919703451597, 'Delta_up': 39889.197034515964}
+{'execution': np.float64(19.715110869649934), 'Delta_down': 4153.517359915389, 'Delta_up': 41535.17359915389}
+{'execution': np.float64(23.408422620709207), 'Delta_down': 4394.54779059921, 'Delta_up': 43945.477905992106}
+{'execution': np.float64(10.667225257041494), 'Delta_down': 6777.031907983059, 'Delta_up': 67770.31907983059}
+{'execution': np.float64(6.558466400170043), 'Delta_down': 6872.971422471486, 'Delta_up': 68729.71422471486}
+{'execution': np.float64(100.1910953086834), 'Delta_down': 9155.724243376191, 'Delta_up': 91557.24243376192}
+{'execution': np.float64(47.8115887751007), 'Delta_down': 9941.085504472168, 'Delta_up': 99410.85504472168}
+[DONE] careTaking/plots/taskset_plot.pdf

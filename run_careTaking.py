@@ -28,6 +28,7 @@ def main():
     parser.add_argument('--numpaths', type=int, default=2, help='The number of execution paths for each task.')
     parser.add_argument('--scalef', type=float, default=0.8, help="A scaling factor for sub-paths' execution and suspension times.")
     parser.add_argument('--plot_sets', action='store_true', help='Generate 100 tasksets and plot the results.')
+    parser.add_argument('--printTasks', type=bool, default=False, help='Print the tasks sets')
     args = parser.parse_args()
 
     if args.plot_sets:
@@ -37,7 +38,7 @@ def main():
 
 def run_single_taskset(args):
     # Convert args to a dictionary to pass to taskGeneration_p
-    params = vars(args)
+    params = vars(args).copy()
     params.pop('plot_sets', None)
 
     print("Generating task set with the following parameters:")
@@ -118,20 +119,23 @@ def run_and_plot_tasksets(args):
 
     utilization_step = 0.01
     utilizations = np.arange(utilization_step, 1.0 + utilization_step, utilization_step)
+    # give me an np array with only 0.5
+    utilizations_40 = np.array([0.4])
 
-    params = vars(args)
+    params = vars(args).copy()
     params.pop('plot_sets', None)
+    params.pop('printTasks', None)
 
-    for u in utilizations:
+    for u in utilizations_40:
         print(f"Generating 10 task sets for utilization {u:.2f}")
-        for i in range(10):
+        for i in range(1):
             params['uTotal'] = u
             params['seed'] = random.randint(1, 10000)
 
             tasks = taskGeneration_p(**params)
             tasks.sort(key=lambda x: x['period'])
 
-            ct_tasks = generate_care_taking_tasks(tasks, 1, 100, 1000)
+            ct_tasks = generate_care_taking_tasks(tasks, 1, 10, 100)
             ct_rt_tasks = ct_to_rt_simple(tasks, ct_tasks)
 
 
@@ -155,7 +159,16 @@ def run_and_plot_tasksets(args):
                 tda_res_sparese_ct = False
                 print(f"T: None")
 
-
+            # nicely print rt and ct tasksets
+            if args.printTasks:
+                print("RT Taskset:")
+                for task in tasks:
+                    # only print execution and period
+                    task = {'execution': task['execution'], 'period': task['period']}
+                    print(task)
+                print("CT Taskset:")
+                for task in ct_tasks:
+                    print(task)
 
             # Store results
             #results["Suspension Oblivious"].append((u, susp_obl_res))
