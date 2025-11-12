@@ -6,7 +6,7 @@ from schedTest.tgPath import taskGeneration_p
 from schedTest.FixedPriority import SuspObl, SuspObl_WCRT
 from careTaking.SimpleTests import LiuAndLaylandBound, HyperbolicBound, TimeDemandAnalysis
 from careTaking.SimpleTests_ct import LiuAndLaylandBound_CT, HyperbolicBound_CT, TimeDemandAnalysis_CT, SparseWorkloadFunction_CT
-from careTaking.plots.plotting import plot_tasksets
+from careTaking.plotting import plot_tasksets
 from careTaking.care_taking_task import generate_care_taking_tasks, ct_to_rt_simple, ct_to_rt_sparse, find_largest_sparse_T, ct_to_rt_simple_opt
 import time
 import os
@@ -32,7 +32,7 @@ def main():
     parser.add_argument('--scalef', type=float, default=0.8, help="A scaling factor for sub-paths' execution and suspension times.")
     parser.add_argument('--plot_sets', action='store_true', help='Generate 100 tasksets and plot the results.')
     parser.add_argument('--printTasks', type=bool, default=False, help='Print the tasks sets')
-    parser.add_argument('--ct_wcet_mult', type=int, default=1, help='Multiplier for the care-taking task\'s WCET.')
+    parser.add_argument('--ct_wcet_mult', type=float, default=1, help='Multiplier for the care-taking task\'s WCET.')
     parser.add_argument('--ct_d_down_mult', type=int, default=10, help='Multiplier for Delta_down.')
     parser.add_argument('--ct_d_up_mult', type=int, default=100, help='Multiplier for Delta_up.')
     args = parser.parse_args()
