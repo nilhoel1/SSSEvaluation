@@ -8,7 +8,7 @@ if [ -z "$1" ]; then
   else
     NUM_PARALLEL=$(nproc)
   fi
-  echo "Number of parallel processes not specified. Using $NUM_PARALLEL cores."
+  echo "Number of parallel processes not specified. Using $NUM_PARALLEL cores." > /dev/null
 else
   NUM_PARALLEL=$1
 fi
@@ -29,13 +29,18 @@ NrTasks=(2 5 25 50 100)
 
 # Create a command for each combination of parameters
 for wcet in "${WCETMul[@]}"; do
-  for up in "${Delta_upMul[@]}"; do
-    for down in "${Delta_DownMul[@]}"; do
+  for up_idx in "${!Delta_upMul[@]}"; do
+    for down_idx in "${!Delta_DownMul[@]}"; do
+      if (( down_idx < up_idx )); then
+        continue
+      fi
+      up=${Delta_upMul[$up_idx]}
+      down=${Delta_DownMul[$down_idx]}
       for tasks in "${NrTasks[@]}"; do
-        echo "echo 'Running with WCETMul=$wcet, Delta_upMul=$up, Delta_DownMul=$down, NrTasks=$tasks'; $PYTHON_EXEC run_careTaking.py --plot_sets --NumberOfTasksPerSet '$tasks' --ct_wcet_mult '$wcet' --ct_d_up_mult '$up' --ct_d_down_mult '$down'"
+        echo "{ echo 'Running with WCETMul=$wcet, Delta_upMul=$up, Delta_DownMul=$down, NrTasks=$tasks'; $PYTHON_EXEC run_careTaking.py --plot_sets --NumberOfTasksPerSet '$tasks' --ct_wcet_mult '$wcet' --ct_d_up_mult '$up' --ct_d_down_mult '$down' ;} > /dev/null"
       done
     done
   done
 done | xargs -P "$NUM_PARALLEL" -I {} bash -c "{}"
 
-echo "All variations have been processed."
+echo "All variations have been processed." > /dev/null
