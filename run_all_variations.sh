@@ -25,7 +25,7 @@ fi
 WCETMul=(0.5 1 1.5 5 10)
 Delta_upMul=(10 25 50 100 200)
 Delta_DownMul=(5 10 25 50 100)
-NrTasks=(2 5 10 25 50 100)
+NrTasks=(2 5 10 15 20 25 30 40 50 60 70 80 90 100)
 
 # Create a command for each combination of parameters
 for wcet in "${WCETMul[@]}"; do
