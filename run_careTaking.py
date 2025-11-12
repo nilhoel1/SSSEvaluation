@@ -145,13 +145,11 @@ def run_and_plot_tasksets(args):
     ignore_first_time_stamp = True
 
     # Create a directory name based on the arguments
-    dir_name = f"N-{args.NumberOfTasksPerSet}_CT-W{args.ct_wcet_mult}-Down{args.ct_d_down_mult}-Up{args.ct_d_up_mult}"
-    plot_dir = os.path.join("careTaking", "plots", dir_name)
+    file_base_name = f"N-{args.NumberOfTasksPerSet}_CT-W{args.ct_wcet_mult}-Down{args.ct_d_down_mult}-Up{args.ct_d_up_mult}"
+    plot_dir = os.path.join("careTaking", "plots")
 
-    # Remove the directory if it exists, then create it
-    if os.path.exists(plot_dir):
-        shutil.rmtree(plot_dir)
-    os.makedirs(plot_dir)
+    # Create the directory if it does not exist
+    os.makedirs(plot_dir, exist_ok=True)
 
 
     for u in utilizations:
@@ -225,11 +223,11 @@ def run_and_plot_tasksets(args):
 
 
     # Plot results
-    plot_path = os.path.join(plot_dir, "taskset_plot.pdf")
+    plot_path = os.path.join(plot_dir, f"{file_base_name}.pdf")
     plot_tasksets(results, plot_path)
 
     # save time to compute T in csv file
-    csv_path = os.path.join(plot_dir, "time_to_find_T.csv")
+    csv_path = os.path.join(plot_dir, f"{file_base_name}_time_T.csv")
     data = np.column_stack((time_to_find_T["Nr Tasks"], time_to_find_T["time"]))
     np.savetxt(csv_path, data, delimiter=",", fmt="%s", header="Nr Tasks, time", comments='')
 
