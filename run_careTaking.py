@@ -22,7 +22,7 @@ def main():
     parser.add_argument('--uTotal', type=float, default=0.75, help='The total utilization of the task set.')
     parser.add_argument('--minsslength', type=float, default=0, help='Minimum suspension length as a ratio of (period - execution).')
     parser.add_argument('--maxsslength', type=float, default=0, help='Maximum suspension length as a ratio of (period - execution).')
-    parser.add_argument('--Pmin', type=int, default=100, help='Minimum task period.')
+    parser.add_argument('--Pmin', type=int, default=10, help='Minimum task period.')
     parser.add_argument('--numLog', type=int, default=1, help='The number of logarithmic decades for period distribution.')
     parser.add_argument('--vRatio', type=float, default=0, help='The ratio of tasks that have suspensions.')
     parser.add_argument('--seed', type=int, default=random.randint(1, 1000), help='The random seed for generation.')
@@ -118,12 +118,12 @@ def run_and_plot_tasksets(args):
     results = {
         #"Liu and Layland Bound": [],
         #"Hyperbolic Bound": [],
-        "TDA": [],
+        "without care-taking": [],
         #"Liu and Layland Bound + CT(1,100,200)": [],
         #"Hyperbolic Bound + CT(1,100,200)": [],
-        "TDA simple": [],
-        "TDA periodic": [],
-        "TDA sparse": [],
+        "arbitrary": [],
+        "periodic": [],
+        "sparse": [],
     }
 
     utilization_step = 0.01
@@ -145,7 +145,7 @@ def run_and_plot_tasksets(args):
     ignore_first_time_stamp = True
 
     # Create a directory name based on the arguments
-    dir_name = f"N-{args.NumberOfTasksPerSet}_S-{args.minsslength}-{args.maxsslength}_Seg-{args.numsegs}_CT-{args.ct_wcet_mult}-{args.ct_d_down_mult}-{args.ct_d_up_mult}"
+    dir_name = f"N-{args.NumberOfTasksPerSet}_CT-W{args.ct_wcet_mult}-Down{args.ct_d_down_mult}-Up{args.ct_d_up_mult}"
     plot_dir = os.path.join("careTaking", "plots", dir_name)
 
     # Remove the directory if it exists, then create it
@@ -214,14 +214,14 @@ def run_and_plot_tasksets(args):
             #results["Suspension Oblivious"].append((u, susp_obl_res))
             #results["Liu and Layland Bound"].append((u, ll_res))
             #results["Hyperbolic Bound"].append((u, hb_res))
-            results["TDA"].append((u, tda_res))
+            results["without care-taking"].append((u, tda_res))
             # Store results with ct
             #results["Suspension Oblivious + CT(1,100,200)"
             #results["Liu and Layland Bound + CT(1,100,200)"].append((u, ll_res_ct))
             #results["Hyperbolic Bound + CT(1,100,200)"].append((u, hb_res_ct))
-            results["TDA simple"].append((u, tda_res_ct))
-            results["TDA periodic"].append((u, tda_res_ct_opt))
-            results["TDA sparse"].append((u, tda_res_sparese_ct))
+            results["arbitrary"].append((u, tda_res_ct))
+            results["periodic"].append((u, tda_res_ct_opt))
+            results["sparse"].append((u, tda_res_sparese_ct))
 
 
     # Plot results

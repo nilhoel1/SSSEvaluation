@@ -30,13 +30,15 @@ def plot_tasksets(data, output_path):
                     total += 1
                     if res_sched:
                         schedulable += 1
-            
-            acceptance_ratios.append(schedulable / total if total > 0 else 0)
-        
-        ax.plot([u * 100 for u in utilizations], acceptance_ratios, '-', label=test_name, clip_on=False)
 
-    ax.legend(bbox_to_anchor=(0.5, 1.11), loc=10, markerscale=1.5, ncol=3, borderaxespad=0., prop={'size': 10})
+            acceptance_ratios.append(schedulable / total if total > 0 else 0)
+
+        markers = ['o', 's', '^', 'D', 'v', '<', '>', 'p', '*', 'h']
+        marker_idx = list(data.keys()).index(test_name) % len(markers)
+        ax.plot([u * 100 for u in utilizations], acceptance_ratios, marker=markers[marker_idx], linestyle='-', label=test_name, clip_on=False)
+
+    #ax.legend(bbox_to_anchor=(0.5, 1.11), loc=10, markerscale=1.5, ncol=3, borderaxespad=0., prop={'size': 10})
     ax.grid()
-    
+
     fig.savefig(output_path, bbox_inches='tight')
     print(f'[DONE] {output_path}')
