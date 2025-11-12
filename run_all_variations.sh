@@ -25,17 +25,17 @@ fi
 WCETMul=(0.5 1 1.5 5 10)
 Delta_upMul=(10 25 50 100 200)
 Delta_DownMul=(5 10 25 50 100)
-NrTasks=(2 5 25 50 100)
+NrTasks=(2 5 10 25 50 100)
 
 # Create a command for each combination of parameters
 for wcet in "${WCETMul[@]}"; do
   for up_idx in "${!Delta_upMul[@]}"; do
     for down_idx in "${!Delta_DownMul[@]}"; do
-      if (( down_idx < up_idx )); then
-        continue
-      fi
       up=${Delta_upMul[$up_idx]}
       down=${Delta_DownMul[$down_idx]}
+      if (( up <= down )); then
+        continue
+      fi
       for tasks in "${NrTasks[@]}"; do
         echo "{ echo 'Running with WCETMul=$wcet, Delta_upMul=$up, Delta_DownMul=$down, NrTasks=$tasks'; $PYTHON_EXEC run_careTaking.py --plot_sets --NumberOfTasksPerSet '$tasks' --ct_wcet_mult '$wcet' --ct_d_up_mult '$up' --ct_d_down_mult '$down' ;} > /dev/null"
       done
