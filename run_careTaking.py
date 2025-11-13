@@ -154,7 +154,7 @@ def run_and_plot_tasksets(args):
 
     for u in utilizations:
         print(f"Generating 10 task sets for utilization {u:.2f}")
-        for i in range(10):
+        for i in range(1000):
             params['uTotal'] = u
             params['seed'] = random.randint(1, 10000)
 

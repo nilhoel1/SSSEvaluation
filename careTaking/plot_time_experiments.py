@@ -104,26 +104,33 @@ def plot_results(num_tasks, means, p1, p25, p75, p99, output_file=None):
 
     Args:
         num_tasks: Array of number of tasks
-        means: Array of mean times
-        p1: Array of 1st percentile times
-        p25: Array of 25th percentile times
-        p75: Array of 75th percentile times
-        p99: Array of 99th percentile times
+        means: Array of mean times in seconds
+        p1: Array of 1st percentile times in seconds
+        p25: Array of 25th percentile times in seconds
+        p75: Array of 75th percentile times in seconds
+        p99: Array of 99th percentile times in seconds
         output_file: Optional output file path to save the figure
     """
     fig, ax = plt.subplots(figsize=(12, 7))
 
+    # Convert from seconds to milliseconds
+    means_ms = means * 1000
+    p1_ms = p1 * 1000
+    p25_ms = p25 * 1000
+    p75_ms = p75 * 1000
+    p99_ms = p99 * 1000
+
     # Use 25th and 75th percentiles for the box boundaries
-    q1 = p25
-    q3 = p75
+    q1 = p25_ms
+    q3 = p75_ms
 
     # Use 1st and 99th percentiles for whiskers
-    whislo = p1
-    whishi = p99
+    whislo = p1_ms
+    whishi = p99_ms
 
     # Create the box plot data structure
     keys = ['med', 'q1', 'q3', 'whislo', 'whishi']
-    box_stats = [dict(zip(keys, vals)) for vals in zip(means, q1, q3, whislo, whishi)]
+    box_stats = [dict(zip(keys, vals)) for vals in zip(means_ms, q1, q3, whislo, whishi)]
 
     # Create positions for the boxes
     positions = list(range(1, len(num_tasks) + 1))
@@ -141,7 +148,7 @@ def plot_results(num_tasks, means, p1, p25, p75, p99, output_file=None):
     ax.set_xticklabels(num_tasks)
 
     ax.set_xlabel('Number of Tasks', fontsize=14, fontweight='bold')
-    ax.set_ylabel('Time (seconds)', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Time (milliseconds)', fontsize=14, fontweight='bold')
     ax.set_title('Computation Time vs Number of Tasks', fontsize=16, fontweight='bold')
     ax.grid(True, alpha=0.3, linestyle='--', axis='y')
 
@@ -151,14 +158,14 @@ def plot_results(num_tasks, means, p1, p25, p75, p99, output_file=None):
     legend_elements = [
         Patch(facecolor='lightblue', edgecolor='blue', label='25th-75th percentile (IQR)'),
         Line2D([0], [0], color='red', linewidth=2, label='Mean'),
-        Line2D([0], [0], color='blue', linewidth=1.5, label='Whiskers (1st-99th percentile)')
+        Line2D([0], [0], color='blue', linewidth=1.5, label='1st-99th percentile')
     ]
     ax.legend(handles=legend_elements, fontsize=12, loc='best')
 
     # Use log scale if the range is large
-    if np.max(means) / np.min(means) > 100:
+    if np.max(means_ms) / np.min(means_ms) > 100:
         ax.set_yscale('log')
-        ax.set_ylabel('Time (seconds, log scale)', fontsize=14, fontweight='bold')
+        ax.set_ylabel('Time (milliseconds, log scale)', fontsize=14, fontweight='bold')
 
     plt.tight_layout()
 

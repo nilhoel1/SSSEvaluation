@@ -37,7 +37,7 @@ def plot_tasksets(data, output_path):
         marker_idx = list(data.keys()).index(test_name) % len(markers)
         ax.plot([u * 100 for u in utilizations], acceptance_ratios, marker=markers[marker_idx], linestyle='-', label=test_name, clip_on=False)
 
-    #ax.legend(bbox_to_anchor=(0.5, 1.11), loc=10, markerscale=1.5, ncol=3, borderaxespad=0., prop={'size': 10})
+    #ax.legend(bbox_to_anchor=(0.5, 1.11), loc=10, markerscale=1.5, ncol=len(data), borderaxespad=0., prop={'size': 10})
     ax.grid()
 
     fig.savefig(output_path, bbox_inches='tight')
