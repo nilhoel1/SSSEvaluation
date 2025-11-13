@@ -1,12 +1,22 @@
 {
     "version": "0.2.0",
     "configurations": [
+
         {
             "name": "Python: Debug run_careTaking.py",
             "type": "python",
             "request": "launch",
             "program": "${workspaceFolder}/run_careTaking.py",
             "args": ["--plot_sets"],
+            "console": "integratedTerminal"
+        },
+
+        {
+            "name": "Python: Debug case study.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/run_careTaking.py",
+            "args": ["--test_predefined"],
             "console": "integratedTerminal"
         }
     ]

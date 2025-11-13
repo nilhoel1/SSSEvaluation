@@ -12,6 +12,59 @@ import time
 import os
 import shutil
 
+def test_predefined_feasibility():
+    """
+    Tests the feasibility of a predefined set of care-taking tasks
+    under the sparse model by finding the largest sparse period (hat_T).
+    """
+    # Task system as provided by the user.
+    # Using C1 as execution time, T1 as Delta_down, and T2 as Delta_up.
+    ct_tasks = [
+        {'name': 'Prime', 'execution': 10, 'Delta_down': 500, 'Delta_up': 1000},
+        {'name': 'BinarySearch', 'execution': 10, 'Delta_down': 2500, 'Delta_up': 5000},
+        {'name': 'PetriNet', 'execution': 10, 'Delta_down': 5000, 'Delta_up': 10000},
+        {'name': 'InsertionSort', 'execution': 10, 'Delta_down': 50000, 'Delta_up': 100000},
+    ]
+    rt_tasks = [
+        {'name': 'Prime', 'execution': 1, 'period': 20, 'deadline': 20},
+        {'name': 'BinarySearch', 'execution': 8, 'period': 50, 'deadline': 50},
+        {'name': 'PetriNet', 'execution': 28, 'period': 50, 'deadline': 50},
+        {'name': 'InsertionSort', 'execution': 36, 'period': 1000, 'deadline': 1000},
+    ]
+
+    ct_rt_tasks = ct_to_rt_simple(rt_tasks, ct_tasks)
+
+    print("Testing feasibility for the following care-taking tasks:")
+    for task in ct_tasks:
+        print(f"- {task['name']}: C={task['execution']}, Delta_down={task['Delta_down']}, Delta_up={task['Delta_up']}")
+    print("-" * 30)
+
+    # Find the largest sparse period T
+    largest_T = find_largest_sparse_T(ct_tasks)
+    feasible_sparse = SparseWorkloadFunction_CT(copy.deepcopy(rt_tasks), copy.deepcopy(ct_tasks), largest_T)
+    feasible_naive = TimeDemandAnalysis_CT(copy.deepcopy(rt_tasks), copy.deepcopy(ct_rt_tasks))
+
+    tda_res = TimeDemandAnalysis(copy.deepcopy(rt_tasks))
+
+
+    if largest_T is not None:
+        print(f"The largest sparse period (hat_T) found is: {largest_T}")
+        if tda_res:
+            print("RESULT: rt tasks Feasible.")
+        else:
+            print("RESULT: RT tasks are not fesible.")
+        if feasible_sparse:
+            print("RESULT: Feasible under the sparse model.")
+        else:
+            print("RESULT: NOT feasible under the sparse model.")
+        if feasible_naive:
+            print("RESULT: Feasible under the naive model.")
+        else:
+            print("RESULT: NOT feasible under the naive model.")
+    else:
+        print("RESULT: NOT feasible under the sparse model.")
+        print("No suitable sparse period (hat_T) could be found.")
+
 def main():
     """
     This script generates a task set using tgPath.py and checks its
@@ -35,9 +88,12 @@ def main():
     parser.add_argument('--ct_wcet_mult', type=float, default=1, help='Multiplier for the care-taking task\'s WCET.')
     parser.add_argument('--ct_d_down_mult', type=int, default=10, help='Multiplier for Delta_down.')
     parser.add_argument('--ct_d_up_mult', type=int, default=100, help='Multiplier for Delta_up.')
+    parser.add_argument('--test_predefined', action='store_true', help='Test a predefined task set.')
     args = parser.parse_args()
 
-    if args.plot_sets:
+    if args.test_predefined:
+        test_predefined_feasibility()
+    elif args.plot_sets:
         run_and_plot_tasksets(args)
     else:
         run_single_taskset(args)
