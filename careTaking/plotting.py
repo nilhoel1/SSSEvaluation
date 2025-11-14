@@ -10,13 +10,13 @@ def plot_tasksets(data, output_path):
     ax = fig.add_subplot(111)
     fig.subplots_adjust(top=0.9, left=0.1, right=0.95, hspace=0.3)
 
-    ax.set_xlabel('Utilization (%)', size=15)
-    ax.set_ylabel('Acceptance Ratio', size=15)
+    ax.set_xlabel('Utilization (%)', size=20)
+    ax.set_ylabel('Acceptance Ratio', size=20)
     ax.spines['top'].set_color('black')
     ax.spines['bottom'].set_color('black')
     ax.spines['left'].set_color('black')
     ax.spines['right'].set_color('black')
-    ax.tick_params(labelcolor='black', top=False, bottom=False, left=False, right=False)
+    ax.tick_params(labelcolor='black', labelsize=16, top=False, bottom=False, left=False, right=False)
 
     utilizations = sorted(list(set([d[0] for d in data[list(data.keys())[0]]])))
 

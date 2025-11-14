@@ -106,6 +106,7 @@ def run_single_taskset(args):
     params.pop('ct_wcet_mult', None)
     params.pop('ct_d_down_mult', None)
     params.pop('ct_d_up_mult', None)
+    params.pop('test_predefined', None)
     # Using a formatted string for better alignment
     for key, value in params.items():
         print(f"- {key:<20}: {value}")
@@ -193,6 +194,7 @@ def run_and_plot_tasksets(args):
     params.pop('ct_wcet_mult', None)
     params.pop('ct_d_down_mult', None)
     params.pop('ct_d_up_mult', None)
+    params.pop('test_predefined', None)
 
     time_to_find_T = {
             "Nr Tasks": [],
