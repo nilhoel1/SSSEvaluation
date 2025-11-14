@@ -20,7 +20,7 @@ def test_predefined_feasibility():
     # Task system as provided by the user.
     # Using C1 as execution time, T1 as Delta_down, and T2 as Delta_up.
     ct_tasks = [
-        {'name': 'Prime', 'execution': 10, 'Delta_down': 500, 'Delta_up': 1000},
+        {'name': 'Prime', 'execution': 10, 'Delta_down': 1000, 'Delta_up': 2000},
         {'name': 'BinarySearch', 'execution': 10, 'Delta_down': 2500, 'Delta_up': 5000},
         {'name': 'PetriNet', 'execution': 10, 'Delta_down': 5000, 'Delta_up': 10000},
         {'name': 'InsertionSort', 'execution': 10, 'Delta_down': 50000, 'Delta_up': 100000},
