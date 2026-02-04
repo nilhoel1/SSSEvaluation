@@ -128,7 +128,7 @@ def theorem_13_test_njit(ct_tasks_arr, hat_T):
         for t in range(1, int(omega_i_size) + 1):
             sum_val = 0
             for l_idx in L_i_indices:
-                denominator = max(math.ceil(ct_tasks_arr[l_idx, 1] / hat_T), 1)
+                denominator = math.ceil(ct_tasks_arr[l_idx, 1] / hat_T)
                 if denominator > 0:
                     sum_val += math.ceil(t / denominator)
 
@@ -157,15 +157,40 @@ def theorem_13_test(ct_tasks, hat_T):
     ct_tasks_arr = np.array([[task['execution'], task['Delta_down'], task['Delta_up']] for task in ct_tasks])
     return theorem_13_test_njit(ct_tasks_arr, hat_T)
 
+@njit
+def aproximate_T_start(ct_tasks_arr, hat_T):
+    n_tasks = ct_tasks_arr.shape[0]
+    window_sizes= np.zeros((n_tasks, 2))
+
+    for i in range(n_tasks):
+        window_sizes[i][0] = ct_tasks_arr[i, 2] - ct_tasks_arr[i, 1]
+        window_sizes[i][1] = ct_tasks_arr[i, 1] # Delta^down
+
+    old_hat_T = 0
+    while(hat_T != old_hat_T):
+        new_hat_T = hat_T
+
+        for i in range(n_tasks):
+            for l in range(n_tasks):
+                if window_sizes[l][0] > window_sizes[i][0] + (2 * hat_T):
+                    if new_hat_T < window_sizes[l][1]:
+                        new_hat_T = window_sizes[l][1]
+        if new_hat_T == hat_T:
+            return int(hat_T)
+        old_hat_T = hat_T
+        hat_T = new_hat_T
+
+    return int(hat_T)
 
 @njit
 def find_largest_sparse_T_njit(ct_tasks_arr):
     if ct_tasks_arr.shape[0] == 0:
         return -1
 
-    start_T = 1
-    max_T = np.min(ct_tasks_arr[:, 2])
-    for hat_T in range(int(max_T), int(start_T) - 1, -1):
+    end_T = 1
+    start_T = np.min(ct_tasks_arr[:, 2])
+    start_T = aproximate_T_start(ct_tasks_arr,np.min(ct_tasks_arr[:, 2]))
+    for hat_T in range(int(start_T), int(end_T) - 1, -1):
         if theorem_13_test_njit(ct_tasks_arr, hat_T):
             return hat_T
 

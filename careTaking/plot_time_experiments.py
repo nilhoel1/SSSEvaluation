@@ -147,8 +147,11 @@ def plot_results(num_tasks, means, p1, p25, p75, p99, output_file=None):
     ax.set_xticks(positions)
     ax.set_xticklabels(num_tasks)
 
-    ax.set_xlabel('Number of Tasks', fontsize=14, fontweight='bold')
-    ax.set_ylabel('Time (milliseconds)', fontsize=14, fontweight='bold')
+    # Set tick label size
+    ax.tick_params(axis='both', which='major', labelsize=16)
+
+    ax.set_xlabel('Number of Tasks', size=20, fontweight='bold')
+    ax.set_ylabel('Time (milliseconds)', size=20, fontweight='bold')
     ax.set_title('Computation Time vs Number of Tasks', fontsize=16, fontweight='bold')
     ax.grid(True, alpha=0.3, linestyle='--', axis='y')
 
