@@ -1,3 +1,5 @@
 *.pyc
 *.DS_Store
 *.csv
+.venv
+=1.14.2

@@ -6,7 +6,7 @@ All tasks used for the paper "Releaser Design and Schedulability Analysis for Ca
 ## Setup
 
 To recreate the experiments, you first need to set up the Python environment.
-This artifact was evaluated using **Python 3.14.3**.
+This artifact was evaluated using **Python 3.14.3**. The following steps should also be followed, when using the devcontainer in vsCode, which we recommend!
 
 1.  **Create a virtual environment:**
     The scripts assume the virtual environment is located at `.venv` in the root of the repository.
